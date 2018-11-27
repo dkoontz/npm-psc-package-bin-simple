@@ -9,7 +9,11 @@ const platform = { win32: "win64", darwin: "macos" }[process.platform] || "linux
 https.get(
   `https://github.com/purescript/psc-package/releases/download/${version}/${platform}.tar.gz`,
   res => res.pipe(
-      tar.x({"C": 'psc-package', strip: 1}).on("finish", () => {
+      tar.x({"C": 'psc-package', strip: 1}).then(() => {
+        if (platform === "linux64") {
+          shell.chmod("777", './psc-package')
+        }
+
         if (shell.test("-f", "./psc-package/psc-package")) {
           shell.mv("./psc-package/psc-package", "./psc-package/psc-package.exe")
         }
